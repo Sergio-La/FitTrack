@@ -1,10 +1,12 @@
+import { useRouter } from 'expo-router';
 import React from 'react';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import Logo from '../components/assets/icons/Logo';
 import { COLORS, SIZES } from '../constants/theme';
 
 const LoginScreen = () => {
+    const router = useRouter();
     return (
         <SafeAreaProvider style={styles.container}>
             <View style={styles.container}>
@@ -20,6 +22,13 @@ const LoginScreen = () => {
                 {/*Password*/}
                 <TextInput style={styles.textInput} secureTextEntry={true} placeholder="Password">
                 </TextInput>
+
+                <TouchableOpacity style={styles.button} activeOpacity={0.8} onPress={() => {
+                    console.log('Log In');
+                    router.replace('/(tabs)');
+                }}>
+                    <Text style={styles.buttonText}>Log In</Text>
+                </TouchableOpacity>
             </View>
         </SafeAreaProvider>
     );
@@ -72,6 +81,19 @@ const styles = StyleSheet.create({
         fontSize: SIZES.font,
         marginBottom: SIZES.base * 2
     },
+    button: {
+        backgroundColor: COLORS.primary,
+        height: 48,
+        borderRadius: SIZES.radius,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: SIZES.base * 2
+    },
+    buttonText: {
+        color: COLORS.textHigh,
+        fontWeight: 'bold',
+        fontSize: SIZES.font
+    }
 });
 
 export default LoginScreen;
