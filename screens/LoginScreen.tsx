@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, TextInput, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { COLORS, SIZES } from '../constants/theme';
 
@@ -11,6 +11,12 @@ const LoginScreen = () => {
 
                 {/* Aquí irán los textos de bienvenida */}
             </View>
+            {/*Email*/}
+            <TextInput style={styles.textInput} >
+            </TextInput>
+            {/*Password*/}
+            <TextInput style={styles.textInput} >
+            </TextInput>
         </SafeAreaProvider>
     );
 };
@@ -34,6 +40,26 @@ const styles = StyleSheet.create({
         color: COLORS.textMedium,
         lineHeight: SIZES.font * 1.5,
         fontSize: SIZES.font
+    },
+    logoContainer: {
+        width: 80,
+        height: 80,
+        backgroundColor: COLORS.primary,
+        borderRadius: 40,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: SIZES.base * 2
+    },
+    textInput: {
+        backgroundColor: COLORS.surface,
+        borderColor: COLORS.border,
+        borderWidth: 1,
+        borderRadius: SIZES.radius,
+        height: 48,
+        paddingHorizontal: SIZES.base * 2,
+        color: COLORS.textHigh,
+        fontSize: SIZES.font,
+        marginBottom: SIZES.base * 2
     }
 });
 
