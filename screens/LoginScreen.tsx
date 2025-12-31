@@ -1,22 +1,26 @@
 import React from 'react';
-import { StyleSheet, TextInput, View } from 'react-native';
+import { StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import Logo from '../components/assets/icons/Logo';
 import { COLORS, SIZES } from '../constants/theme';
 
 const LoginScreen = () => {
     return (
         <SafeAreaProvider style={styles.container}>
             <View style={styles.container}>
-                {/* Aquí irá el Logo que ves en tu maqueta */}
-
-                {/* Aquí irán los textos de bienvenida */}
+                <Logo></Logo>
+                <Text style={styles.title}>Fit Track</Text>
+                <Text style={styles.subtitle}>Welcome back. Crush your goals.</Text>
             </View>
-            {/*Email*/}
-            <TextInput style={styles.textInput} >
-            </TextInput>
-            {/*Password*/}
-            <TextInput style={styles.textInput} >
-            </TextInput>
+
+            <View style={styles.formContainer}>
+                {/*Email*/}
+                <TextInput style={styles.textInput} placeholder="Email">
+                </TextInput>
+                {/*Password*/}
+                <TextInput style={styles.textInput} secureTextEntry={true} placeholder="Password">
+                </TextInput>
+            </View>
         </SafeAreaProvider>
     );
 };
@@ -25,6 +29,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: COLORS.background,
+        alignItems: 'center',
     },
     headerContainer: {
         alignItems: 'center',
@@ -33,7 +38,8 @@ const styles = StyleSheet.create({
     title: {
         fontWeight: 'bold',
         textTransform: 'uppercase',
-        fontSize: SIZES.font * 2
+        fontSize: SIZES.font * 2,
+        color: COLORS.textHigh,
     },
     subtitle: {
         fontWeight: 'bold',
@@ -50,6 +56,11 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         marginBottom: SIZES.base * 2
     },
+    formContainer: {
+        paddingHorizontal: SIZES.base * 2,
+        marginTop: SIZES.base * 2,
+        width: '100%'
+    },
     textInput: {
         backgroundColor: COLORS.surface,
         borderColor: COLORS.border,
@@ -60,7 +71,7 @@ const styles = StyleSheet.create({
         color: COLORS.textHigh,
         fontSize: SIZES.font,
         marginBottom: SIZES.base * 2
-    }
+    },
 });
 
 export default LoginScreen;
