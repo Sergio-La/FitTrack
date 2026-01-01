@@ -18,8 +18,23 @@ const LoginScreen = () => {
     // Hook para la navegación de Expo Router
     const router = useRouter();
 
+    // --- Validación de email ---
+    const validateEmail = (email: string) => {
+        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return regex.test(email);
+    };
     // --- LÓGICA DE AUTENTICACIÓN ---
     const handleLogin = () => {
+        // validar si los campos estan llenos
+        if (!email || !password) {
+            alert("Por favor, completa todos los campos.");
+            return;
+        }
+        // validar si el email es correcto
+        if (!validateEmail(email)) {
+            alert("Por favor, ingresa un email válido.");
+            return;
+        }
         // Llamada al controlador con los datos de los inputs
         const response = login(email, password);
 
@@ -111,7 +126,7 @@ const LoginScreen = () => {
                             <MaterialCommunityIcons
                                 name="arrow-right"
                                 size={20}
-                                color={COLORS.textMedium} // El mismo color oscuro que definimos para el texto
+                                color={COLORS.textHigh} // El mismo color oscuro que definimos para el texto
                                 style={{ marginLeft: 8 }} // Pequeño espacio entre el texto y la flecha
                             />
                         </View>
