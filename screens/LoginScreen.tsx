@@ -1,19 +1,25 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+
 
 // --- IMPORTACIONES DE ASSETS Y LÓGICA ---
 import Logo from '../components/assets/icons/Logo';
 import { COLORS, SIZES } from '../constants/theme';
-import { login } from '../controller/authController';
+import { ejecutarPruebaDB, loginUsuario } from '../database/db-service';
 
 const LoginScreen = () => {
     // --- ESTADOS (MEMORIA) DEL FORMULARIO ---
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+
+    //Ejecutar consulta para crear un usuario de prueba
+    useEffect(() => {
+        ejecutarPruebaDB();
+    }, []);
 
     // Hook para la navegación de Expo Router
     const router = useRouter();
@@ -36,14 +42,14 @@ const LoginScreen = () => {
             return;
         }
         // Llamada al controlador con los datos de los inputs
-        const response = login(email, password);
+        const response = loginUsuario(email, password);
 
-        if (response.success) {
+        if (response?.success) {
             // Si el login es exitoso, redirigimos al Home (Tabs)
             router.replace('/(tabs)');
         } else {
             // Si falla, mostramos una alerta al usuario
-            alert("El usuario no existe o la contraseña es incorrecta.");
+            alert(response?.message);
         }
     }
 
