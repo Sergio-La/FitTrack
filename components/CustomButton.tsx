@@ -15,7 +15,7 @@ export const CustomBottom = ({ activeOpacity, label, iconName, onPress }: Props)
     return (
         <TouchableOpacity style={styles.button} onPress={onPress} activeOpacity={activeOpacity}>
             {label && <Text style={styles.buttonText}>{label}</Text>}
-            {iconName && <MaterialCommunityIcons name={iconName} size={20} color={COLORS.textHigh} />}
+            {iconName && <MaterialCommunityIcons name={iconName} size={SIZES.buttonIcon} color={COLORS.textHigh} />}
         </TouchableOpacity>
     );
 };
@@ -24,8 +24,8 @@ export const CustomBottom = ({ activeOpacity, label, iconName, onPress }: Props)
 const styles = StyleSheet.create({
     button: {
         backgroundColor: COLORS.primary,
-        height: 56,
-        borderRadius: SIZES.radius,
+        height: SIZES.buttonHeight,
+        borderRadius: SIZES.buttonRadius,
         alignItems: 'center',
         justifyContent: 'center',
         marginTop: SIZES.base,

@@ -18,6 +18,7 @@ interface Props {
 
 export const CustomInput = ({ label, iconLeft, iconRight, ...props }: Props) => {
     const [isPasswordVisible, setIsPasswordVisible] = React.useState(false);
+
     return (
         <View style={styles.wrapper}>
             {label && <Text style={styles.label}>{label}</Text>}
@@ -27,10 +28,11 @@ export const CustomInput = ({ label, iconLeft, iconRight, ...props }: Props) => 
                     style={styles.input}
                     placeholderTextColor={COLORS.textMedium}
                     {...props} // Pasa automáticamente placeholder, value, etc.
+                    secureTextEntry={props.secureTextEntry && !isPasswordVisible}
                 />
                 <MaterialCommunityIcons name={iconRight} size={20} color={COLORS.textMedium} style={[styles.icon, { display: iconRight ? 'flex' : 'none' }]} />
                 {/* Nuestro propio ojo con el color correcto 🎨 */}
-                <TouchableOpacity style={{ display: props.secureTextEntry ? 'flex' : 'none' }} onPress={() => setIsPasswordVisible(!isPasswordVisible)}>
+                <TouchableOpacity style={{ display: props.secureTextEntry && !iconRight ? 'flex' : 'none' }} onPress={() => setIsPasswordVisible(!isPasswordVisible)}>
                     <MaterialCommunityIcons
                         name={isPasswordVisible ? "eye-off-outline" : "eye-outline"}
                         size={20}
