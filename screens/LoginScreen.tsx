@@ -1,12 +1,13 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 
 // --- IMPORTACIONES DE ASSETS Y LÓGICA ---
 import Logo from '../components/assets/icons/Logo';
+import { CustomBottom } from '../components/CustomButton';
+import { CustomInput } from '../components/CustomInput';
 import { COLORS, SIZES } from '../constants/theme';
 import { ejecutarPruebaDB, loginUsuario } from '../database/db-service';
 
@@ -14,7 +15,6 @@ const LoginScreen = () => {
     // --- ESTADOS (MEMORIA) DEL FORMULARIO ---
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
     //Ejecutar consulta para crear un usuario de prueba
     useEffect(() => {
@@ -67,76 +67,33 @@ const LoginScreen = () => {
 
                 {/* SECCIÓN 2: FORMULARIO (Inputs y Botón) */}
                 <View style={styles.formContainer}>
-                    <Text style={styles.inputLabel}>Email</Text>
-                    <View style={styles.inputContainer}>
-                        {/* Icono de sobre para el Email ✉️ */}
-                        <MaterialCommunityIcons
-                            name="email-outline"
-                            size={20}
-                            color={COLORS.textMedium}
-                            style={styles.inputIcon}
-                        />
-                        {/* Campo de Email */}
-                        <TextInput
-                            style={styles.textInputInside}
-                            onChangeText={setEmail}
-                            value={email}
-                            keyboardType="email-address"
-                            autoCapitalize="none"
-                            placeholder="Email"
-                            placeholderTextColor={COLORS.textMedium}
-                        />
-                    </View>
+                    <CustomInput
+                        label="Email"
+                        iconLeft="email-outline"
+                        placeholder="Email"
+                        value={email}
+                        onChangeText={setEmail}
+                        keyboardType="email-address"
+                        autoCapitalize="none"
+                    />
 
                     {/* SECCIÓN 2.1: INPUT DE CONTRASEÑA */}
-                    <Text style={styles.inputLabel}>Password</Text>
-                    <View style={styles.inputContainer}>
-                        <MaterialCommunityIcons
-                            name="lock-outline"
-                            size={20}
-                            color={COLORS.textMedium}
-                            style={styles.inputIcon}
-                        />
-                        {/* Campo de Contraseña */}
-                        <TextInput
-                            style={styles.textInputInside}
-                            onChangeText={setPassword}
-                            value={password}
-                            secureTextEntry={!isPasswordVisible}
-                            placeholder="Password"
-                            placeholderTextColor={COLORS.textMedium}
-                        />
-
-                        {/* Nuestro propio ojo con el color correcto 🎨 */}
-                        <TouchableOpacity onPress={() => setIsPasswordVisible(!isPasswordVisible)}>
-                            <MaterialCommunityIcons
-                                name={isPasswordVisible ? "eye-off-outline" : "eye-outline"}
-                                size={20}
-                                color={COLORS.textMedium} // Ahora sí es blanco/homogéneo
-                            />
-                        </TouchableOpacity>
-                    </View>
+                    <CustomInput
+                        label="Password"
+                        iconLeft="lock-outline"
+                        placeholder="Password"
+                        value={password}
+                        onChangeText={setPassword}
+                        secureTextEntry
+                    />
 
 
                     {/* Botón de Acción */}
-                    <TouchableOpacity
-                        style={styles.button}
-                        activeOpacity={0.8}
+                    <CustomBottom
+                        label="Log In"
+                        iconName="arrow-right"
                         onPress={handleLogin}
-                    >
-                        {/* Contenedor interno para alinear texto e icono */}
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <Text style={styles.buttonText}>Log In</Text>
-
-                            {/* La flecha a la derecha ➡️ */}
-                            <MaterialCommunityIcons
-                                name="arrow-right"
-                                size={20}
-                                color={COLORS.textHigh} // El mismo color oscuro que definimos para el texto
-                                style={{ marginLeft: 8 }} // Pequeño espacio entre el texto y la flecha
-                            />
-                        </View>
-                    </TouchableOpacity>
+                    />
                 </View>
             </View>
         </SafeAreaProvider>
@@ -173,50 +130,6 @@ const styles = StyleSheet.create({
     formContainer: {
         width: '100%',
     },
-    inputContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: COLORS.surface,
-        borderColor: COLORS.border,
-        borderWidth: 1,
-        borderRadius: SIZES.radius,
-        height: 56,
-        paddingHorizontal: SIZES.base * 2,
-        marginBottom: SIZES.base * 2,
-    },
-    inputLabel: {
-        color: COLORS.textMedium,
-        fontSize: SIZES.font,
-        marginBottom: SIZES.base,
-        fontWeight: 'bold',
-    },
-    inputIcon: {
-        marginRight: SIZES.base,
-    },
-
-    textInputInside: {
-        flex: 1,
-        color: COLORS.textMedium,
-        fontSize: SIZES.font,
-        height: '100%',
-        marginLeft: SIZES.base,
-        backgroundColor: 'transparent',
-        outline: 'none',
-    },
-    button: {
-        backgroundColor: COLORS.primary,
-        height: 56,
-        borderRadius: SIZES.radius,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginTop: SIZES.base,
-    },
-    buttonText: {
-        color: COLORS.textHigh,
-        fontWeight: 'bold',
-        fontSize: SIZES.font,
-        textTransform: 'uppercase',
-    }
 });
 
 export default LoginScreen;

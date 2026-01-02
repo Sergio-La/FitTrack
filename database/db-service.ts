@@ -1,7 +1,7 @@
 import * as SQLite from 'expo-sqlite';
 
-// 1. interface para el usuario
-interface Usuario {
+// --- 1. INTERFACES ---
+export interface Usuario {
     usuario_id?: number;
     nombre: string;
     correo: string;
@@ -10,184 +10,159 @@ interface Usuario {
     nivel_experiencia: 'principiante' | 'intermedio' | 'avanzado';
 }
 
-// 2. interface para el ejercicio
-interface Ejercicio {
+export interface Ejercicio {
     ejercicio_id?: number;
     nombre_ejercicio: string;
-    grupo_muscular: string;
     descripcion_ejercicio: string;
     notas: string;
+    usuario_id: number;
+    grupo_muscular_id: number;
 }
 
-// interface para el grupo muscular
-interface GrupoMuscular {
+export interface GrupoMuscular {
     grupo_muscular_id?: number;
     nombre_grupo: string;
 }
 
-// 2. Abrimos la conexión de forma síncrona
+// --- 2. CONEXIÓN ---
 const db = SQLite.openDatabaseSync('fittrack.db');
 
+// --- 3. INICIALIZACIÓN (Setup) ---
 export const setupDatabase = () => {
     try {
-        // Ejecutamos el comando para crear la tabla si no existe
+        // Habilitamos claves foráneas y creamos tablas
         db.execSync(`
-        CREATE TABLE IF NOT EXISTS usuarios (
-        usuario_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        nombre TEXT NOT NULL,
-        correo TEXT NOT NULL UNIQUE,
-        contraseña TEXT NOT NULL,
-        fecha_registro TEXT NOT NULL,
-        nivel_experiencia TEXT CHECK(nivel_experiencia IN ('principiante', 'intermedio', 'avanzado'))
-        );
-        `);
+            PRAGMA foreign_keys = ON;
 
-        // Ejecutamos el comando para crear la tabla ejercicios si no existe
-        db.execSync(`
-        CREATE TABLE IF NOT EXISTS ejercicios (
-        ejercicio_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        nombre_ejercicio TEXT NOT NULL,
-        descripcion_ejercicio TEXT,
-        notas TEXT,
-        );
-        `);
+            CREATE TABLE IF NOT EXISTS usuarios (
+                usuario_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                nombre TEXT NOT NULL,
+                correo TEXT NOT NULL UNIQUE,
+                contraseña TEXT NOT NULL,
+                fecha_registro TEXT NOT NULL,
+                nivel_experiencia TEXT CHECK(nivel_experiencia IN ('principiante', 'intermedio', 'avanzado'))
+            );
 
-        // consulta para crear un grupo muscular
-        db.execSync(`
-        CREATE TABLE IF NOT EXISTS grupos_musculares (
-        grupo_muscular_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        nombre_grupo TEXT NOT NULL
-        );
-        `);
+            CREATE TABLE IF NOT EXISTS grupos_musculares (
+                grupo_muscular_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                nombre_grupo TEXT NOT NULL UNIQUE
+            );
 
-        // Ejecutamos el comando para para agregar columna foranea del id del usuario
-        db.execSync(`
-        ALTER TABLE ejercicios ADD COLUMN usuario_id INTEGER NOT NULL;
+            CREATE TABLE IF NOT EXISTS ejercicios (
+                ejercicio_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                nombre_ejercicio TEXT NOT NULL,
+                descripcion_ejercicio TEXT,
+                notas TEXT,
+                usuario_id INTEGER,
+                grupo_muscular_id INTEGER,
+                FOREIGN KEY (usuario_id) REFERENCES usuarios (usuario_id),
+                FOREIGN KEY (grupo_muscular_id) REFERENCES grupos_musculares (grupo_muscular_id)
+            );
         `);
-
-        // consulta para agregar columna foranea del id del grupo muscular
-        db.execSync(`
-        ALTER TABLE ejercicios ADD COLUMN grupo_muscular_id INTEGER NOT NULL;
-        `);
-
-        console.log("Base de datos lista.");
+        console.log("Estructura de base de datos lista ✅");
     } catch (error) {
-        console.error("Error al inicializar la base de datos.", error);
+        console.error("Error al inicializar la base de datos:", error);
     }
 };
 
-// 3. Insertar un usuario
-export const registrarUsuario = (user: Usuario) => {
+// --- 4. FUNCIONES DE CONSULTA (Retornan objeto o null) ---
+
+export const consultarUsuario = (correo: string): Usuario | null => {
     try {
-        db.runSync(`
-        INSERT INTO usuarios (nombre, correo, contraseña, fecha_registro, nivel_experiencia)
-        VALUES (?, ?, ?, ?, ?);
-      `,
-            [user.nombre, user.correo, user.contraseña, user.fecha_registro, user.nivel_experiencia]
-        );
-        console.log("Usuario insertado correctamente.");
+        return db.getFirstSync<Usuario>(`SELECT * FROM usuarios WHERE correo = ?`, [correo]);
     } catch (error) {
-        console.error("Error al insertar el usuario.", error);
-    }
-};
-
-export const loginUsuario = (correo: string, contraseña: string) => {
-    try {
-        const row = db.getFirstSync(`SELECT * FROM usuarios WHERE correo = ? AND contraseña = ?`, [correo, contraseña]) as Usuario || null;
-
-        if (!row) {
-            return {
-                success: false,
-                message: "Usuario no encontrado o contraseña incorrecta"
-            };
-        }
-
-        if (row.contraseña !== contraseña) {
-            return {
-                success: false,
-                message: "Contraseña incorrecta"
-            };
-        }
-
-        return {
-            success: true,
-            message: "Login exitoso",
-            user: row
-        };
-    } catch (error) {
-        console.error("Error al consultar el usuario.", error);
         return null;
     }
 };
 
-// 4. función de test
-export const ejecutarPruebaDB = () => {
+export const consultarGrupoMuscular = (nombre_grupo: string): GrupoMuscular | null => {
     try {
-        //array con grupos musculares
-        const gruposMusculares = [
-            { nombre_grupo: "Pecho" },
-            { nombre_grupo: "Espalda" },
-            { nombre_grupo: "Hombros" },
-            { nombre_grupo: "Biceps" },
-            { nombre_grupo: "Triceps" },
-            { nombre_grupo: "Cuádriceps" },
-            { nombre_grupo: "Isquiotibiales" },
-            { nombre_grupo: "Glúteos" },
-            { nombre_grupo: "Abdominales" },
-            { nombre_grupo: "Lumbares" },
-            { nombre_grupo: "Pantorrillas" },
-            { nombre_grupo: "Trapecios" },
-            { nombre_grupo: "Antebrazos" }
-        ];
-
-        // Insertamos los grupos musculares
-        gruposMusculares.forEach((grupoMuscular) => {
-            registrarGrupoMuscular(grupoMuscular);
-        });
-
-        // Insertamos un usuario de prueba
-        const usuarioDePrueba: Usuario = {
-            nombre: "Test User",
-            correo: "test@example.com",
-            contraseña: "test123",
-            fecha_registro: new Date().toISOString(),
-            nivel_experiencia: "principiante"
-        };
-        registrarUsuario(usuarioDePrueba);
-        console.log("Usuario de prueba insertado correctamente.");
+        return db.getFirstSync<GrupoMuscular>(`SELECT * FROM grupos_musculares WHERE nombre_grupo = ?`, [nombre_grupo]);
     } catch (error) {
-        console.error("Error al insertar el usuario de prueba.", error);
+        return null;
     }
 };
 
-// insertar un ejercicio
+// --- 5. LÓGICA DE AUTENTICACIÓN ---
+
+export const loginUsuario = (correo: string, contrasenia: string) => {
+    try {
+        const user = consultarUsuario(correo);
+
+        if (!user) {
+            return { success: false, message: "El correo no está registrado ❌" };
+        }
+
+        if (user.contraseña !== contrasenia) {
+            return { success: false, message: "Contraseña incorrecta 🔑" };
+        }
+
+        return { success: true, message: "Login exitoso", user: user };
+    } catch (error) {
+        console.error("Error en loginUsuario:", error);
+        return { success: false, message: "Error técnico en el servidor" };
+    }
+};
+
+// --- 6. INSERCIONES (Registros) ---
+
+export const registrarUsuario = (user: Usuario) => {
+    try {
+        db.runSync(
+            `INSERT INTO usuarios (nombre, correo, contraseña, fecha_registro, nivel_experiencia) VALUES (?, ?, ?, ?, ?);`,
+            [user.nombre, user.correo, user.contraseña, user.fecha_registro, user.nivel_experiencia]
+        );
+        console.log(`Usuario ${user.nombre} registrado.`);
+    } catch (error) {
+        console.error("Error al registrar usuario:", error);
+    }
+};
+
+export const registrarGrupoMuscular = (nombre: string) => {
+    try {
+        db.runSync(`INSERT OR IGNORE INTO grupos_musculares (nombre_grupo) VALUES (?);`, [nombre]);
+    } catch (error) {
+        console.error("Error al registrar grupo muscular:", error);
+    }
+};
+
 export const registrarEjercicio = (ejercicio: Ejercicio) => {
     try {
-        db.runSync(`
-        INSERT INTO ejercicios (nombre_ejercicio, grupo_muscular, descripcion_ejercicio, notas)
-        VALUES (?, ?, ?, ?);
-      `,
-            [ejercicio.nombre_ejercicio, ejercicio.grupo_muscular, ejercicio.descripcion_ejercicio, ejercicio.notas]
+        db.runSync(
+            `INSERT INTO ejercicios (nombre_ejercicio, descripcion_ejercicio, notas, usuario_id, grupo_muscular_id) VALUES (?, ?, ?, ?, ?);`,
+            [ejercicio.nombre_ejercicio, ejercicio.descripcion_ejercicio, ejercicio.notas, ejercicio.usuario_id, ejercicio.grupo_muscular_id]
         );
-        console.log("Ejercicio insertado correctamente.");
+        console.log("Ejercicio insertado.");
     } catch (error) {
-        console.error("Error al insertar el ejercicio.", error);
+        console.error("Error al insertar ejercicio:", error);
     }
 };
 
+// --- 7. FUNCIÓN DE TEST / SEEDING ---
 
-// registrar un grupo muscular
-
-export const registrarGrupoMuscular = (grupoMuscular: GrupoMuscular) => {
+export const ejecutarPruebaDB = () => {
     try {
-        db.runSync(`
-        INSERT INTO grupos_musculares (nombre_grupo)
-        VALUES (?);
-      `,
-            [grupoMuscular.nombre_grupo]
-        );
-        console.log("Grupo muscular insertado correctamente.");
+        // 1. Insertar Grupos Musculares si no existen
+        const grupos = ["Pecho", "Espalda", "Hombros", "Biceps", "Triceps", "Piernas"];
+        grupos.forEach(nombre => {
+            if (!consultarGrupoMuscular(nombre)) {
+                registrarGrupoMuscular(nombre);
+            }
+        });
+
+        // 2. Insertar Usuario de Prueba si no existe
+        const emailTest = "test@example.com";
+        if (!consultarUsuario(emailTest)) {
+            registrarUsuario({
+                nombre: "Test User",
+                correo: emailTest,
+                contraseña: "123",
+                fecha_registro: new Date().toISOString(),
+                nivel_experiencia: "principiante"
+            });
+            console.log("Usuario de prueba creado ✅");
+        }
     } catch (error) {
-        console.error("Error al insertar el grupo muscular.", error);
+        console.error("Error en ejecutarPruebaDB:", error);
     }
-};  
+};
