@@ -30,6 +30,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         marginTop: SIZES.base,
         flexDirection: 'row',
+        gap: SIZES.base,
     },
     buttonText: {
         color: COLORS.textHigh,

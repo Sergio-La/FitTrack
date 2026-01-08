@@ -9,12 +9,12 @@ interface Props {
     onPress: () => void;
 }
 
-export const CustomHeader = ({ title, showBackButton = false }: Props) => {
+export const CustomHeader = ({ title, showBackButton = false, onPress }: Props) => {
     return (
         <View style={styles.container}>
             {showBackButton && (
-                <TouchableOpacity>
-                    <MaterialCommunityIcons name="arrow-left" size={SIZES.headerIcon} color="black" />
+                <TouchableOpacity onPress={onPress}>
+                    <MaterialCommunityIcons name="arrow-left" size={SIZES.headerIcon} color={COLORS.textHigh} />
                 </TouchableOpacity>
             )}
             <Text style={styles.title}>{title}</Text>

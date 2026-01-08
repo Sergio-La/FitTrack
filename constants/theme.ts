@@ -36,6 +36,7 @@ export const SIZES = {
   // --- Inputs ---
   inputHeight: 56,
   inputRadius: 8,
+  inputMultilineHeight: 100,
 
   // --- Floating Action Button (FAB) ---
   fabIcon: 24,

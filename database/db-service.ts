@@ -83,6 +83,14 @@ export const consultarGrupoMuscular = (nombre_grupo: string): GrupoMuscular | nu
     }
 };
 
+export const consultarGruposMusculares = (): GrupoMuscular[] => {
+    try {
+        return db.getAllSync<GrupoMuscular>(`SELECT * FROM grupos_musculares`);
+    } catch (error) {
+        return [];
+    }
+};
+
 // --- 5. LÓGICA DE AUTENTICACIÓN ---
 
 export const loginUsuario = (correo: string, contrasenia: string) => {
