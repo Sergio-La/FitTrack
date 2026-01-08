@@ -24,6 +24,14 @@ export interface GrupoMuscular {
     nombre_grupo: string;
 }
 
+export interface AboutYou {
+    usuario_id: number;
+    estatura: number;
+    peso: number;
+    edad: number;
+    genero: 'masculino' | 'femenino' | 'otro';
+}
+
 // --- 2. CONEXIÓN ---
 const db = SQLite.openDatabaseSync('fittrack.db');
 
@@ -57,6 +65,16 @@ export const setupDatabase = () => {
                 grupo_muscular_id INTEGER,
                 FOREIGN KEY (usuario_id) REFERENCES usuarios (usuario_id),
                 FOREIGN KEY (grupo_muscular_id) REFERENCES grupos_musculares (grupo_muscular_id)
+            );
+
+            CREATE TABLE IF NOT EXISTS about_you (
+                about_you_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                estatura INTEGER NOT NULL,
+                peso INTEGER NOT NULL,
+                edad INTEGER NOT NULL,
+                genero TEXT NOT NULL CHECK(genero IN ('masculino', 'femenino', 'otro')),
+                usuario_id INTEGER,
+                FOREIGN KEY (usuario_id) REFERENCES usuarios (usuario_id)
             );
         `);
         console.log("Estructura de base de datos lista ✅");
@@ -172,5 +190,19 @@ export const ejecutarPruebaDB = () => {
         }
     } catch (error) {
         console.error("Error en ejecutarPruebaDB:", error);
+    }
+};
+
+// --- 8. INSERCIONES (Registros) ---
+
+export const registrarAboutYou = (aboutYou: AboutYou) => {
+    try {
+        db.runSync(
+            `INSERT INTO about_you (estatura, peso, edad, genero, usuario_id) VALUES (?, ?, ?, ?, ?);`,
+            [aboutYou.estatura, aboutYou.peso, aboutYou.edad, aboutYou.genero, aboutYou.usuario_id]
+        );
+        console.log("About You insertado.");
+    } catch (error) {
+        console.error("Error al insertar about you:", error);
     }
 };

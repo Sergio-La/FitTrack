@@ -6,14 +6,20 @@ import { StyleSheet, Text, View } from 'react-native';
 export default function HomeScreen() {
 
   const router = useRouter();
-  const handleAddButton = () => {
+
+  const handleAddWorkoutButton = () => {
     router.push('/addWorkout');
+  };
+
+  const handleAboutYouButton = () => {
+    router.push('/aboutYou');
   };
 
   return (
     <View style={[styles.container, { backgroundColor: COLORS.background }]}>
       <Text style={{ color: COLORS.textHigh }}>FitTrack está vivo... 🚀</Text>
-      <FloatingButton title="Add" onPress={handleAddButton} iconName="plus-circle-outline" />
+      {/* <FloatingButton title="Add" onPress={handleAddWorkoutButton} iconName="plus-circle-outline" /> */}
+      <FloatingButton title="About You" onPress={handleAboutYouButton} iconName="account-plus-outline" />
     </View>
   );
 }
