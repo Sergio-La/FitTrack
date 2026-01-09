@@ -15,11 +15,16 @@ export default function HomeScreen() {
     router.push('/aboutYou');
   };
 
+  const handleAddRoutineButton = () => {
+    router.push('/addRoutine');
+  };
+
   return (
     <View style={[styles.container, { backgroundColor: COLORS.background }]}>
       <Text style={{ color: COLORS.textHigh }}>FitTrack está vivo... 🚀</Text>
       {/* <FloatingButton title="Add" onPress={handleAddWorkoutButton} iconName="plus-circle-outline" /> */}
-      <FloatingButton title="About You" onPress={handleAboutYouButton} iconName="account-plus-outline" />
+      {/*<FloatingButton title="About You" onPress={handleAboutYouButton} iconName="account-plus-outline" />*/}
+      <FloatingButton title="Agregar rutina" onPress={handleAddRoutineButton} iconName="plus-circle-outline" />
     </View>
   );
 }

@@ -32,6 +32,20 @@ export interface AboutYou {
     genero: 'masculino' | 'femenino' | 'otro';
 }
 
+export interface Rutina {
+    rutina_id?: number;
+    nombre_rutina: string;
+    dias: string;
+    usuario_id: number;
+    id_grupo_muscular: number;
+}
+
+export interface RutinaEjercicio {
+    rutina_ejercicio_id?: number;
+    rutina_id: number;
+    ejercicio_id: number;
+}
+
 // --- 2. CONEXIÓN ---
 const db = SQLite.openDatabaseSync('fittrack.db');
 
@@ -75,6 +89,24 @@ export const setupDatabase = () => {
                 genero TEXT NOT NULL CHECK(genero IN ('masculino', 'femenino', 'otro')),
                 usuario_id INTEGER,
                 FOREIGN KEY (usuario_id) REFERENCES usuarios (usuario_id)
+            );
+
+            CREATE TABLE IF NOT EXISTS rutinas (
+                rutina_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                nombre_rutina TEXT NOT NULL,
+                dias TEXT NOT NULL,
+                usuario_id INTEGER,
+                id_grupo_muscular INTEGER,
+                FOREIGN KEY (id_grupo_muscular) REFERENCES grupos_musculares (grupo_muscular_id),
+                FOREIGN KEY (usuario_id) REFERENCES usuarios (usuario_id)
+            );
+
+            CREATE TABLE IF NOT EXISTS rutina_ejercicios (
+                rutina_ejercicio_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                rutina_id INTEGER,
+                ejercicio_id INTEGER,
+                FOREIGN KEY (rutina_id) REFERENCES rutinas (rutina_id),
+                FOREIGN KEY (ejercicio_id) REFERENCES ejercicios (ejercicio_id)
             );
         `);
         console.log("Estructura de base de datos lista ✅");
@@ -204,5 +236,29 @@ export const registrarAboutYou = (aboutYou: AboutYou) => {
         console.log("About You insertado.");
     } catch (error) {
         console.error("Error al insertar about you:", error);
+    }
+};
+
+export const registrarRutina = (rutina: Rutina) => {
+    try {
+        db.runSync(
+            `INSERT INTO rutinas (nombre_rutina, dias, usuario_id, id_grupo_muscular) VALUES (?, ?, ?, ?);`,
+            [rutina.nombre_rutina, rutina.dias, rutina.usuario_id, rutina.id_grupo_muscular]
+        );
+        console.log("Rutina insertada.");
+    } catch (error) {
+        console.error("Error al insertar rutina:", error);
+    }
+};
+
+export const registrarRutinaEjercicio = (rutinaEjercicio: RutinaEjercicio) => {
+    try {
+        db.runSync(
+            `INSERT INTO rutina_ejercicios (rutina_id, ejercicio_id) VALUES (?, ?);`,
+            [rutinaEjercicio.rutina_id, rutinaEjercicio.ejercicio_id]
+        );
+        console.log("Rutina Ejercicio insertado.");
+    } catch (error) {
+        console.error("Error al insertar rutina ejercicio:", error);
     }
 };

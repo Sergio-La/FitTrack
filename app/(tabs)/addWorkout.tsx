@@ -3,7 +3,6 @@ import { useRouter } from "expo-router";
 import { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { CustomCounter } from "../../components/CustomCounter";
 import { CustomDropdown } from "../../components/CustomDropdown";
 import { CustomHeader } from "../../components/CustomHeader";
 import { CustomInput } from "../../components/CustomInput";
@@ -39,10 +38,10 @@ const AddWorkout = () => {
 
     const gruposMuscularesDropdown = prepararGruposMusculares(gruposMusculares);
 
-    const handleWeightChange = (text: string) => {
+    {/*const handleWeightChange = (text: string) => {
         const numericValue = text.replace(/[^0-9]/g, '');
         setPeso(numericValue);
-    };
+    };*/}
 
     const handleSaveWorkout = () => {
         if (!grupoMuscular || !nombreEjercicio || !repeticiones || !series || !peso) {
@@ -94,7 +93,7 @@ const AddWorkout = () => {
                         }}
                     />
                 </View>
-
+                {/*
                 <View style={styles.wrapper}>
                     <View style={styles.counterContainer}>
                         <CustomCounter
@@ -128,7 +127,7 @@ const AddWorkout = () => {
                     onChangeText={handleWeightChange}
                     keyboardType="numeric"
                     iconRight="scale-bathroom"
-                />
+                />*/}
 
                 <View
                     style={{
@@ -186,5 +185,5 @@ const styles = StyleSheet.create({
     counterContainer: {
         flex: 1
     }
-})
+});
 export default AddWorkout;
