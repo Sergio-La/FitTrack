@@ -46,6 +46,11 @@ export interface RutinaEjercicio {
     ejercicio_id: number;
 }
 
+export interface DiaSemana {
+    dia_semana_id?: number;
+    nombre_dia: 'Lunes' | 'Martes' | 'Miercoles' | 'Jueves' | 'Viernes' | 'Sabado' | 'Domingo';
+}
+
 // --- 2. CONEXIÓN ---
 const db = SQLite.openDatabaseSync('fittrack.db');
 
@@ -91,14 +96,26 @@ export const setupDatabase = () => {
                 FOREIGN KEY (usuario_id) REFERENCES usuarios (usuario_id)
             );
 
+            CREATE TABLE IF NOT EXISTS dias_semana (
+                dia_semana_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                nombre_dia TEXT NOT NULL UNIQUE
+            );
+
             CREATE TABLE IF NOT EXISTS rutinas (
                 rutina_id INTEGER PRIMARY KEY AUTOINCREMENT,
-                nombre_rutina TEXT NOT NULL,
-                dias TEXT NOT NULL,
+                nombre_rutina TEXT NOT NULL,    
                 usuario_id INTEGER,
                 id_grupo_muscular INTEGER,
                 FOREIGN KEY (id_grupo_muscular) REFERENCES grupos_musculares (grupo_muscular_id),
                 FOREIGN KEY (usuario_id) REFERENCES usuarios (usuario_id)
+            );
+
+            CREATE TABLE IF NOT EXISTS rutina_dias (
+                rutina_dia_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                rutina_id INTEGER,
+                dia_semana_id INTEGER,
+                FOREIGN KEY (rutina_id) REFERENCES rutinas (rutina_id),
+                FOREIGN KEY (dia_semana_id) REFERENCES dias_semana (dia_semana_id)
             );
 
             CREATE TABLE IF NOT EXISTS rutina_ejercicios (
@@ -125,6 +142,14 @@ export const consultarUsuario = (correo: string): Usuario | null => {
     }
 };
 
+export const consultarDiasSemana = (dia: string): DiaSemana | null => {
+    try {
+        return db.getFirstSync<DiaSemana>(`SELECT * FROM dias_semana WHERE nombre_dia = ?`, [dia]);
+    } catch (error) {
+        return null;
+    }
+};
+
 export const consultarGrupoMuscular = (nombre_grupo: string): GrupoMuscular | null => {
     try {
         return db.getFirstSync<GrupoMuscular>(`SELECT * FROM grupos_musculares WHERE nombre_grupo = ?`, [nombre_grupo]);
@@ -140,6 +165,24 @@ export const consultarGruposMusculares = (): GrupoMuscular[] => {
         return [];
     }
 };
+
+
+export const consultarDiaSemana = (nombre_dia: string): DiaSemana | null => {
+    try {
+        return db.getFirstSync<DiaSemana>(`SELECT * FROM dias_semana WHERE nombre_dia = ?`, [nombre_dia]);
+    } catch (error) {
+        return null;
+    }
+};
+
+export const registrarDiaSemana = (dia: string) => {
+    try {
+        db.runSync(`INSERT OR IGNORE INTO dias_semana (nombre_dia) VALUES (?);`, [dia]);
+    } catch (error) {
+        console.error("Error al registrar dia semanal:", error);
+    }
+};
+
 
 // --- 5. LÓGICA DE AUTENTICACIÓN ---
 
@@ -208,6 +251,19 @@ export const ejecutarPruebaDB = () => {
             }
         });
 
+        console.log("Grupos musculares insertados ✅");
+
+        // 2. Insertar Dias Semana si no existen
+        const dias = ["Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado", "Domingo"];
+        dias.forEach(nombre => {
+            if (!consultarDiaSemana(nombre)) {
+                registrarDiaSemana(nombre);
+            }
+        });
+
+        console.log("Dias semana insertados ✅");
+
+
         // 2. Insertar Usuario de Prueba si no existe
         const emailTest = "test@example.com";
         if (!consultarUsuario(emailTest)) {
@@ -262,3 +318,4 @@ export const registrarRutinaEjercicio = (rutinaEjercicio: RutinaEjercicio) => {
         console.error("Error al insertar rutina ejercicio:", error);
     }
 };
+
