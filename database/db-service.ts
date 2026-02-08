@@ -142,11 +142,14 @@ export const consultarUsuario = (correo: string): Usuario | null => {
     }
 };
 
-export const consultarDiasSemana = (dia: string): DiaSemana | null => {
+// En tu archivo de base de datos
+export const consultarDiasSemana = async (): Promise<DiaSemana[]> => {
     try {
-        return db.getFirstSync<DiaSemana>(`SELECT * FROM dias_semana WHERE nombre_dia = ?`, [dia]);
+        // Usamos la versión Async para mayor estabilidad
+        return await db.getAllAsync<DiaSemana>(`SELECT * FROM dias_semana`);
     } catch (error) {
-        return null;
+        console.error("Error consultando días:", error);
+        return [];
     }
 };
 

@@ -9,12 +9,6 @@ import { COLORS, SIZES } from "../../constants/theme";
 const AddRoutine = () => {
     const router = useRouter();
     const [nombreRutina, setNombreRutina] = useState('');
-    // @ts-ignore
-    const [dias, setDias] = useState([]);
-    // @ts-ignore
-    const [gruposMusculares, setGruposMusculares] = useState([]);
-    // @ts-ignore
-    const [ejercicios, setEjercicios] = useState([]);
 
     const handleBackButton = () => {
         router.back();
