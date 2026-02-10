@@ -45,4 +45,4 @@ export const typography = {
         fontFamily: 'Inter',
         lineHeight: 1.5,
     }
-};
+} as const;
