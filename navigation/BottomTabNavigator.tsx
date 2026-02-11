@@ -3,6 +3,13 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { View, Text } from 'react-native';
 import { colors, typography } from '../theme';
+import {
+    LayoutDashboard,
+    Dumbbell,
+    ClipboardList,
+    Calendar,
+    PlayCircle
+} from 'lucide-react-native';
 
 // Creamos el "objeto" que controlará las pestañas
 const Tab = createBottomTabNavigator();
@@ -17,14 +24,33 @@ export const BottomTabNavigator = () => {
     return (
         <Tab.Navigator
             id="MainTabs"
-            screenOptions={{
-                headerShown: false,
-                tabBarActiveTintColor: colors.dark.textHigh, // Color del texto activo
-                tabBarStyle: {
-                    backgroundColor: colors.dark.background, // Fondo oscuro
-                    borderTopColor: colors.dark.border,      // Línea superior sutil
-                },
-            }}
+            screenOptions={
+                ({ route }) => ({
+                    tabBarIcon: ({ color, size }) => {
+                        if (route.name === 'Dashboard') {
+                            return <LayoutDashboard size={size} color={color} />;
+                        }
+                        if (route.name === 'Ejercicios') {
+                            return <Dumbbell size={size} color={color} />;
+                        }
+                        if (route.name === 'Rutinas') {
+                            return <ClipboardList size={size} color={color} />;
+                        }
+                        if (route.name === 'Plan') {
+                            return <Calendar size={size} color={color} />;
+                        }
+                        if (route.name === 'Entrenar') {
+                            return <PlayCircle size={size} color={color} />;
+                        }
+                    },
+                    headerShown: false,
+                    tabBarActiveTintColor: colors.dark.textHigh, // Color del texto activo
+                    tabBarStyle: {
+                        backgroundColor: colors.dark.background, // Fondo oscuro
+                        borderTopColor: colors.dark.border,      // Línea superior sutil
+                    }
+                })
+            }
         >
             {/* Cada Screen es una pestaña individual */}
             <Tab.Screen name="Dashboard" component={Dashboard} />
